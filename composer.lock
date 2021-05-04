@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cfbf7020ac4aca3e0eeacf502ba99219",
+    "content-hash": "5928c045deea6c5b222fb426d297c580",
     "packages": [
         {
             "name": "ajegu/allcoin-core",
-            "version": "dev-main",
+            "version": "dev-alc-70",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ajegu/allcoin-core.git",
-                "reference": "4dc41e6d3b3fb5b38756d6401d00adb6b90de8e1"
+                "reference": "2317510d4b33afa50bc712a4205b967c5bb2be70"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ajegu/allcoin-core/zipball/4dc41e6d3b3fb5b38756d6401d00adb6b90de8e1",
-                "reference": "4dc41e6d3b3fb5b38756d6401d00adb6b90de8e1",
+                "url": "https://api.github.com/repos/ajegu/allcoin-core/zipball/2317510d4b33afa50bc712a4205b967c5bb2be70",
+                "reference": "2317510d4b33afa50bc712a4205b967c5bb2be70",
                 "shasum": ""
             },
             "require": {
@@ -35,7 +35,6 @@
             "require-dev": {
                 "phpunit/phpunit": "^9.3"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -64,10 +63,10 @@
                 "lumen"
             ],
             "support": {
-                "source": "https://github.com/ajegu/allcoin-core/tree/main",
+                "source": "https://github.com/ajegu/allcoin-core/tree/alc-70",
                 "issues": "https://github.com/ajegu/allcoin-core/issues"
             },
-            "time": "2021-05-02T16:56:46+00:00"
+            "time": "2021-05-03T20:30:29+00:00"
         },
         {
             "name": "ajegu/binance-sdk",

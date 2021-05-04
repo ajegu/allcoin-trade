@@ -1,9 +1,9 @@
 <?php
 /** @var Application $app */
 
-use AllCoinTrade\Lambda\BinanceOrderSellLambda;
+use AllCoinTrade\Lambda\BuyOrderLambda;
 use Laravel\Lumen\Application;
 
 $app = require __DIR__ . '/../bootstrap/app.php';
 
-return $app->make(BinanceOrderSellLambda::class);
+return $app->make(BuyOrderLambda::class);

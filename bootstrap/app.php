@@ -2,10 +2,9 @@
 
 use AllCoinCore\Exception\Handler;
 use AllCoinCore\ServiceProvider\AwsServiceProvider;
-use AllCoinCore\ServiceProvider\BinanceServiceProvider;
 use AllCoinCore\ServiceProvider\DynamoDbServiceProvider;
-use AllCoinCore\ServiceProvider\RepositoryServiceProvider;
 use AllCoinCore\ServiceProvider\SerializerServiceProvider;
+use AllCoinTrade\ServiceProvider\RepositoryServiceProvider;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
@@ -70,7 +69,6 @@ $app->configure('app');
 |
 */
 
-$app->register(BinanceServiceProvider::class);
 $app->register(AwsServiceProvider::class);
 $app->register(DynamoDbServiceProvider::class);
 $app->register(SerializerServiceProvider::class);

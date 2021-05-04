@@ -6,7 +6,7 @@
   "type": "project",
   "require": {
     "php": "^8.0",
-    "ajegu/allcoin-core": "dev-main",
+    "ajegu/allcoin-core": "dev-alc-70",
     "ajegu/binance-sdk": "^1",
     "aws/aws-sdk-php": "^3.178",
     "bref/bref": "^1.2",

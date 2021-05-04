@@ -1,0 +1,9 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "AllCoinTrade"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-n2dwg28y9ftm"
+s3_prefix = "AllCoinTrade"
+region = "eu-west-3"
+capabilities = "CAPABILITY_IAM"

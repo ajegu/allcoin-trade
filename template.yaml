@@ -1,0 +1,211 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  AllCoin Trade stack
+
+Transform:
+  - AWS::Serverless-2016-10-31
+
+##########################################################################
+#  Globals                                                               #
+##########################################################################
+Globals:
+  Function:
+    Runtime: provided.al2
+    Layers:
+      - arn:aws:lambda:eu-west-3:209497400698:layer:php-80:8
+    MemorySize: 128
+    Timeout: 900
+    Environment:
+      Variables:
+        APP_TIMEZONE: "Europe/Paris"
+        LOG_CHANNEL: "stderr"
+        AWS_DDB_TABLE_NAME: !Ref AllCoinTradeTable
+
+##########################################################################
+#  Resources                                                             #
+##########################################################################
+Resources:
+
+  ##########################################################################
+  #  DynamoDB configuration                                                #
+  ##########################################################################
+  AllCoinTradeTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: allcoin-trade
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+      LocalSecondaryIndexes:
+        - IndexName: lsi1
+          KeySchema:
+            - AttributeName: pk
+              KeyType: HASH
+            - AttributeName: lsi1
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: lsi2
+          KeySchema:
+            - AttributeName: pk
+              KeyType: HASH
+            - AttributeName: lsi2
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: lsi3
+          KeySchema:
+            - AttributeName: pk
+              KeyType: HASH
+            - AttributeName: lsi3
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: lsi4
+          KeySchema:
+            - AttributeName: pk
+              KeyType: HASH
+            - AttributeName: lsi4
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: lsi5
+          KeySchema:
+            - AttributeName: pk
+              KeyType: HASH
+            - AttributeName: lsi5
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+        - AttributeName: lsi1
+          AttributeType: S
+        - AttributeName: lsi2
+          AttributeType: S
+        - AttributeName: lsi3
+          AttributeType: S
+        - AttributeName: lsi4
+          AttributeType: N
+        - AttributeName: lsi5
+          AttributeType: N
+
+  ##########################################################################
+  #  Lambda function BuyAnalyzerFunction                                   #
+  ##########################################################################
+  BuyAnalyzerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BuyAnalyzer
+      Handler: public/buy_analyzer.php
+      Description: Analyze prices to send a buy event.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AllCoinTradeTable
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt BuyAnalyzerTopic.TopicName
+        - LambdaInvokePolicy:
+            FunctionName: !ImportValue AllCoinTrack-AssetListFunctionName
+        - LambdaInvokePolicy:
+            FunctionName: !ImportValue AllCoinTrack-PriceSearchFunctionName
+      Events:
+        Schedule:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 minute)
+      Environment:
+        Variables:
+          AWS_SNS_TOPIC_BUY_ANALYZER_ARN: !Ref BuyAnalyzerTopic
+          BUY_ANALYZER_TIME_ANALYTICS: PT30M
+  BuyAnalyzerTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: BuyAnalyzerTopic
+
+  ##########################################################################
+  #  Lambda function BuyOrderFunction                                      #
+  ##########################################################################
+  BuyOrderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BuyOrder
+      Handler: public/buy_order.php
+      Description: Create a buy order from buy event.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AllCoinTradeTable
+      Events:
+        SNS:
+          Type: SNS
+          Properties:
+            Topic: !Ref BuyAnalyzerTopic
+
+  ##########################################################################
+  #  Lambda function SellAnalyzerFunction                                  #
+  ##########################################################################
+  SellAnalyzerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: SellAnalyzer
+      Handler: public/sell_analyzer.php
+      Description: Analyze orders to send a sell event.
+      Policies:
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt SellAnalyzerTopic.TopicName
+        - LambdaInvokePolicy:
+            FunctionName: !ImportValue AllCoinTrack-PriceSearchFunctionName
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AllCoinTradeTable
+      Events:
+        Schedule:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 minute)
+      Environment:
+        Variables:
+          AWS_SNS_TOPIC_SELL_ANALYZER_ARN: !Ref SellAnalyzerTopic
+  SellAnalyzerTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: SellAnalyzerTopic
+
+  ##########################################################################
+  #  Lambda function SellOrderFunction                                     #
+  ##########################################################################
+  SellOrderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: SellOrder
+      Handler: public/sell_order.php
+      Description: Create a sell order from buy event.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AllCoinTradeTable
+      Events:
+        SNS:
+          Type: SNS
+          Properties:
+            Topic: !Ref SellAnalyzerTopic
+
+  ##########################################################################
+  #  Lambda function ReportOrderFunction                                   #
+  ##########################################################################
+  ReportOrderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ReportOrder
+      Handler: public/report_order.php
+      Description: Create a report of current orders.
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AllCoinTradeTable
+        - LambdaInvokePolicy:
+            FunctionName: !ImportValue AllCoinTrack-PriceSearchFunctionName
